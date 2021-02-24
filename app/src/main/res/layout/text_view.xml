@@ -8,7 +8,7 @@
 >
 
     <ImageButton
-            android:tooltipText="Hero"
+            android:tooltipText="Hro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:srcCompat="@android:drawable/ic_menu_search"
             android:id="@+id/imageButton"
