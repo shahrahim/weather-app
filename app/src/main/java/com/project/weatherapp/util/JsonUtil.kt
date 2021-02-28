@@ -17,4 +17,8 @@ class JsonUtil {
         return jsonObject.getJSONArray(key)
     }
 
+    fun getValueByKey(jsonObject: JSONObject, key: String): Any {
+        return jsonObject.get(key)
+    }
+
 }
