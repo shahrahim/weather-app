@@ -2,11 +2,12 @@ package com.project.weatherapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
 import com.github.kittinunf.fuel.Fuel
-import com.google.gson.Gson
-
+import com.github.kittinunf.fuel.core.requests.CancellableRequest
+import com.project.weatherapp.util.HttpUtil
+import com.project.weatherapp.util.JsonUtil
+import org.json.JSONObject
+import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,39 +15,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        "https://api.openweathermap.org/data/2.5/weather?zip=08844&exclude=minutely,hourly,daily,alerts&appid=ddc6ceaed94a3585de774b295163af4e".httpPost()
-//            .responseJson {_, res, result ->
-//                if (res.responseMessage == "OK" && res.statusCode == 200) {
-//                    println(result.get().obj())
-//                }
-//            }
-//        println("Hello")
+        val weatherLocationUrl: String = "https://api.openweathermap.org/data/2.5/weather"
+        val zipcode = "08844"
+        val locationSpec: String = "zip=$zipcode"
+        val appId = "ddc6ceaed94a3585de774b295163af4e"
+        val weatherLocationParams: String = "$locationSpec&exclude=minutely,hourly,daily,alerts&appid=$appId"
 
-//        Fuel.get("https://httpbin.org/get").response { request, response, result ->
-//            println(request)
-//            println(response)
-//            val (bytes, error) = result
-//            if (bytes != null) {
-//                println("[response bytes] ${String(bytes)}")
-//            }
-//        }
+        val responseStr = HttpUtil().getResponseStrFromHttpRequest("$weatherLocationUrl?$weatherLocationParams")
+        println(responseStr)
 
-        Fuel.post("https://api.openweathermap.org/data/2.5/weather?zip=08844&exclude=minutely,hourly,daily,alerts&appid=ddc6ceaed94a3585de774b295163af4e")
-            .response { request, response, result ->
-                println(request)
-                println(response)
-                val (bytes, error) = result
-                if (bytes != null) {
-                    var map: Map<String, Any> = HashMap()
-                    map = Gson().fromJson(String(bytes), map.javaClass)
-                    println(map.get("coord"))
-                }
-            }
-
-
-//        Fuel.post("https://api.openweathermap.org/data/2.5/weather?zip=08844&exclude=minutely,hourly,daily,alerts&appid=ddc6ceaed94a3585de774b295163af4e").responseObject<Post>(Post.Deserializer()){
-//                    _,_, result ->
-//                val postsArray = result.component1()
-//            }
     }
 }

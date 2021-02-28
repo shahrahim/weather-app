@@ -24,6 +24,8 @@ android {
     }
 }
 
+
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -39,7 +41,10 @@ dependencies {
 
     implementation 'com.beust:klaxon:5.0.1'
 
+
     implementation 'com.google.code.gson:gson:2.8.6'
 
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.8'
 
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 }
