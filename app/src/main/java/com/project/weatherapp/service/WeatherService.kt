@@ -26,7 +26,7 @@ class WeatherService {
         val weatherUrl: String = this.getWeatherUrl(weatherLocation)
         val weather: Weather
 
-        val jsonResponse: JSONObject = httpUtil.getJsonResponseFromHttpRequest(weatherUrl)
+        val jsonResponse: JSONObject = httpUtil.getJsonObjectFromHttpRequest(weatherUrl)
         val currentWeather: JSONObject = jsonUtil.getJsonObjectByKey(jsonResponse,"current")
         val dailyWeather: JSONArray = jsonUtil.getJsonArrayByKey(jsonResponse,"daily")
 
@@ -39,7 +39,7 @@ class WeatherService {
     private fun getWeatherLocation(location: String): WeatherLocation {
         val locationUrl: String = this.getLocationUrl(location)
 
-        val jsonResponse: JSONObject = httpUtil.getJsonResponseFromHttpRequest(locationUrl)
+        val jsonResponse: JSONObject = httpUtil.getJsonObjectFromHttpRequest(locationUrl)
         val weatherCoordinateJson: JSONObject = jsonUtil.getJsonObjectByKey(jsonResponse, "coord")
 
         val lon: Double = jsonUtil.getValueByKey(weatherCoordinateJson,"lon") as Double
@@ -64,13 +64,13 @@ class WeatherService {
 
         for(i in 0 until weatherObjArray.length()) {
             val weatherObj: JSONObject = weatherObjArray.getJSONObject(i)
-            val tempObj: JSONObject = jsonUtil.getJsonObjectByKey(weatherObj,"temp")
+            val temperatureObj: JSONObject = jsonUtil.getJsonObjectByKey(weatherObj,"temp")
             val feelsLikeObj: JSONObject = jsonUtil.getJsonObjectByKey(weatherObj,"feels_like")
 
             var forecast: WeatherForecast = this.getForecastInfo(weatherObj)
-            val temp: Double = jsonUtil.getValueByKey(tempObj,"day") as Double
+            val temperature: Double = jsonUtil.getValueByKey(temperatureObj,"day") as Double
             val feelsLike: Double = jsonUtil.getValueByKey(feelsLikeObj,"day") as Double
-            forecast.temp = temp
+            forecast.temp = temperature
             forecast.feelsLike = feelsLike
             forecastList.add(i,forecast)
         }
@@ -82,8 +82,12 @@ class WeatherService {
             .getJSONObject(0)
         val mainDescription: String = jsonUtil.getValueByKey(weatherInfo, "main") as String
         val subDescription: String = jsonUtil.getValueByKey(weatherInfo, "description") as String
-        val date: Int = jsonUtil.getValueByKey(weatherObj,"dt") as Int
-        return WeatherForecast(0.0,0.0, mainDescription, subDescription, date)
+        val currentTime: Int = jsonUtil.getValueByKey(weatherObj,"dt") as Int
+        val sunriseTime: Int = jsonUtil.getValueByKey(weatherObj,"sunrise") as Int
+        val sunsetTime: Int = jsonUtil.getValueByKey(weatherObj,"sunset") as Int
+
+        return WeatherForecast(0.0,0.0, mainDescription,
+            subDescription, currentTime.toLong(),sunriseTime.toLong(), sunsetTime.toLong())
     }
 
     private fun getLocationUrl(location: String): String {

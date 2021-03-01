@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
+
+    <View
+            android:layout_height="100dp" android:id="@+id/vInput" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent" app:layout_constraintHorizontal_bias="0.0"/>
+    <EditText
+            android:layout_width="355dp"
+            android:layout_height="45dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="5dp"
+            android:id="@+id/etLocation"
+            android:visibility="visible" android:hint="city or zipcode" app:layout_constraintTop_toTopOf="@id/vInput"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="28dp"
+            android:layout_marginTop="16dp"/>
+    <Button
+            android:text="@string/Search"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/btnSearch"
+            app:layout_constraintTop_toBottomOf="@+id/etLocation" app:layout_constraintStart_toStartOf="@id/vInput"
+            app:layout_constraintEnd_toEndOf="@id/vInput" android:layout_marginTop="8dp"
+            app:layout_constraintHorizontal_bias="0.498"/>
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="95dp" android:id="@+id/vLocation"
+            app:layout_constraintTop_toBottomOf="@+id/vInput" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="40dp"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tvCity"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif"
+            app:layout_constraintTop_toBottomOf="@+id/vInput" app:layout_constraintStart_toStartOf="@id/vLocation"
+            app:layout_constraintEnd_toEndOf="@id/vLocation" app:layout_constraintBottom_toBottomOf="@+id/vLocation"
+            app:layout_constraintVertical_bias="0.433" app:layout_constraintHorizontal_bias="0.498"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:layout_height="27dp" android:id="@+id/tvCoordinates"
+            app:layout_constraintStart_toStartOf="@id/vLocation"
+            app:layout_constraintTop_toBottomOf="@+id/tvCity" android:layout_marginTop="8dp"
+            android:layout_marginStart="192dp"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="@android:drawable/ic_menu_mylocation"
+            android:id="@+id/ivLocation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/vLocation" android:layout_marginTop="48dp"
+            android:layout_marginStart="160dp"/>
+    <View
+            android:layout_width="wrap_content"
+            android:layout_height="200dp" android:id="@+id/view"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="264dp" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"/>
+    <TextView
+            android:textSize="32sp"
+            android:layout_width="wrap_content"
+            android:fontFamily="sans-serif"
+            android:layout_height="wrap_content" android:id="@+id/tvCurrentTemp"
+            app:layout_constraintTop_toTopOf="@+id/view" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="64dp" android:layout_marginStart="28dp"/>
+    <ImageView
+            android:layout_width="158dp"
+            android:layout_height="165dp" app:srcCompat="@drawable/cloudy" android:id="@+id/ivCurrent"
+            app:layout_constraintEnd_toEndOf="@+id/view" app:layout_constraintBottom_toBottomOf="@+id/view"
+            android:layout_marginBottom="8dp" android:contentDescription="TODO"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

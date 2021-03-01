@@ -7,7 +7,7 @@ class HttpUtil {
 
     val jsonUtil: JsonUtil = JsonUtil()
 
-    fun getJsonResponseFromHttpRequest(url: String): JSONObject {
+    fun getJsonObjectFromHttpRequest(url: String): JSONObject {
         val jsonResponseStr = Fuel.post(url)
             .header("Content-Type", "application/json")
             .response { result -> }.get()
