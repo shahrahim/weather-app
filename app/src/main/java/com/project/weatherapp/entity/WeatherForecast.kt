@@ -5,5 +5,9 @@ data class WeatherForecast(
     var feelsLike: Double,
     var mainDescription: String,
     var subDescription: String,
-    var dateTime: Int
+    var dateTime: Long,
+    var sunrise: Long,
+    var sunset: Long,
+    var clouds: Int,
+    var description: WeatherEnum
 )
