@@ -1,27 +1,23 @@
 package com.project.weatherapp
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.requests.CancellableRequest
 import com.project.weatherapp.entity.Weather
+import com.project.weatherapp.entity.WeatherEnum
+import com.project.weatherapp.entity.WeatherForecast
 import com.project.weatherapp.service.WeatherService
-import com.project.weatherapp.util.HttpUtil
-import com.project.weatherapp.util.JsonUtil
-import com.project.weatherapp.util.MathUtil
+import com.project.weatherapp.util.DateUtil
+import com.project.weatherapp.util.StringUtil
+import com.project.weatherapp.util.WeatherUtil
 import kotlinx.android.synthetic.main.input_view.*
-import kotlinx.android.synthetic.main.input_view.view.*
-import org.json.JSONObject
-import org.json.JSONArray
+import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity() {
@@ -39,8 +35,24 @@ class MainActivity : AppCompatActivity() {
         val ivLocation: ImageView = findViewById<ImageView>(R.id.ivLocation)
         val ivCurrent: ImageView = findViewById<ImageView>(R.id.ivCurrent)
         val tvCurrentTemp: TextView = findViewById<TextView>(R.id.tvCurrentTemp)
+        val tvCurrentFeelsLike: TextView = findViewById<TextView>(R.id.tvCurrentFeelsLike)
+        val tvCurrentDescription: TextView = findViewById<TextView>(R.id.tvCurrentDescription)
+
+        val tvDaily1Day: TextView = findViewById<TextView>(R.id.tvDaily1Day)
+        val tvDaily2Day: TextView = findViewById<TextView>(R.id.tvDaily2Day)
+        val tvDaily3Day: TextView = findViewById<TextView>(R.id.tvDaily3Day)
+
+        val tvDaily1Temp: TextView = findViewById<TextView>(R.id.tvDaily1Temp)
+        val tvDaily2Temp: TextView = findViewById<TextView>(R.id.tvDaily2Temp)
+        val tvDaily3Temp: TextView = findViewById<TextView>(R.id.tvDaily3Temp)
+
+        val ivDaily1: ImageView = findViewById<ImageView>(R.id.ivDaily1)
+        val ivDaily2: ImageView = findViewById<ImageView>(R.id.ivDaily2)
+        val ivDaily3: ImageView = findViewById<ImageView>(R.id.ivDaily3)
 
         vHome.setBackgroundResource(R.drawable.gradient_background_day)
+
+
         etLocation.setBackgroundResource(R.color.white)
         btnSearchWeather.setTextColor(Color.WHITE)
         ivLocation.visibility = View.GONE
@@ -49,27 +61,105 @@ class MainActivity : AppCompatActivity() {
         btnSearchWeather.setOnClickListener {
             val locationInput: String = etLocation.text.toString()
             val weather: Weather = WeatherService().getWeather(locationInput)
-            println(weather.current.feelsLike)
+
+            val backgroundResource: Int =
+                if(weather.isDayTime) {
+                R.drawable.gradient_background_day
+            } else {
+                R.drawable.gradient_background_night
+            }
+
+            vHome.setBackgroundResource(backgroundResource)
+
             val feelsLike = weather.current.feelsLike
             tvCity.text = weather.location.city
             tvCity.setTextColor(Color.WHITE)
             tvCity.setTypeface(null, Typeface.ITALIC)
+
             val lon: Double = weather.location.coordinate.lon
             val lat: Double = weather.location.coordinate.lat
-            ivCurrent.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+            ivLocation.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
             tvCoordinates.text = "$lon, $lat"
             tvCoordinates.setTextColor(Color.WHITE)
 
-            val tempInCelcius: Int = MathUtil().getCelciusFromCelvin(weather.current.temp)
+            ivCurrent.setImageResource(WeatherUtil().getWeatherImageIdFromType(weather.current.description, weather.isDayTime))
+            ivCurrent.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
 
-            val tempFormat: String = "$tempInCelcius "+ "\u2103";
+            val tempInFahrenheit: Int = WeatherUtil().getFarenheitFromKelvin(weather.current.temp)
+            val tempFormat: String = "$tempInFahrenheit "+ "\u2109";
             tvCurrentTemp.text = tempFormat
             tvCurrentTemp.setTextColor(Color.WHITE)
 
+            val feelsLikeTemp: Int = WeatherUtil().getFarenheitFromKelvin(weather.current.feelsLike)
+            val feelsLikeFormat: String = "Feels like $feelsLikeTemp "+ "\u2109";
+            tvCurrentFeelsLike.text = feelsLikeFormat
+            tvCurrentFeelsLike.setTextColor(Color.WHITE)
+            println(DateUtil().getWeekDayFromEpochTime(weather.current.dateTime, ""))
 
+            tvCurrentDescription.text = StringUtil().toUpperCase(weather.current.subDescription)
+            tvCurrentDescription.setTextColor(Color.WHITE)
             ivLocation.visibility = View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE
 
+            tvDaily1Day.text = DateUtil().getWeekDayFromEpochTime(weather.daily.get(1).dateTime, "").take(3)
+            tvDaily2Day.text = DateUtil().getWeekDayFromEpochTime(weather.daily.get(2).dateTime, "").take(3)
+            tvDaily3Day.text = DateUtil().getWeekDayFromEpochTime(weather.daily.get(3).dateTime, "").take(3)
+
+            tvDaily1Day.setTextColor(Color.WHITE)
+            tvDaily1Day.setTypeface(null, Typeface.BOLD)
+            tvDaily2Day.setTextColor(Color.WHITE)
+            tvDaily2Day.setTypeface(null, Typeface.BOLD)
+            tvDaily3Day.setTextColor(Color.WHITE)
+            tvDaily3Day.setTypeface(null, Typeface.BOLD)
+
+            val daily1Forecast: WeatherForecast = weather.daily[1]
+            val daily2Forecast: WeatherForecast = weather.daily[2]
+            val daily3Forecast: WeatherForecast = weather.daily[3]
+
+            val daily1Temp: Int = WeatherUtil().getFarenheitFromKelvin(daily1Forecast.temp)
+            val daily2Temp: Int = WeatherUtil().getFarenheitFromKelvin(daily2Forecast.temp)
+            val daily3Temp: Int = WeatherUtil().getFarenheitFromKelvin(daily3Forecast.temp)
+
+            tvDaily1Day.text = DateUtil().getWeekDayFromEpochTime(daily1Forecast.dateTime, "").take(3)
+            tvDaily2Day.text = DateUtil().getWeekDayFromEpochTime(daily2Forecast.dateTime, "").take(3)
+            tvDaily3Day.text = DateUtil().getWeekDayFromEpochTime(daily3Forecast.dateTime, "").take(3)
+
+            tvDaily1Day.setTextColor(Color.WHITE)
+            tvDaily1Day.setTypeface(null, Typeface.BOLD)
+            tvDaily2Day.setTextColor(Color.WHITE)
+            tvDaily2Day.setTypeface(null, Typeface.BOLD)
+            tvDaily3Day.setTextColor(Color.WHITE)
+            tvDaily3Day.setTypeface(null, Typeface.BOLD)
+
+            tvDaily1Temp.setTextColor(Color.WHITE)
+            tvDaily1Temp.setTypeface(null, Typeface.BOLD)
+            tvDaily2Temp.setTextColor(Color.WHITE)
+            tvDaily2Temp.setTypeface(null, Typeface.BOLD)
+            tvDaily3Temp.setTextColor(Color.WHITE)
+            tvDaily3Temp.setTypeface(null, Typeface.BOLD)
+
+            tvDaily1Temp.text = "$daily1Temp "+ "\u2109";
+            tvDaily2Temp.text = "$daily2Temp "+ "\u2109";
+            tvDaily3Temp.text = "$daily3Temp "+ "\u2109";
+
+            ivDaily1.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily1Forecast.description, true))
+            ivDaily2.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily2Forecast.description, true))
+            ivDaily3.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily3Forecast.description, true))
+
+            ivDaily1.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+            ivDaily2.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+            ivDaily3.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+
+            try {
+                val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+            } catch (e: Exception) {
+                // TODO: handle exception
+            }
         }
 
+    }
+
+    private fun getWeatherImage(weatherType: WeatherEnum): Int {
+        return R.drawable.cloudy
     }
 }

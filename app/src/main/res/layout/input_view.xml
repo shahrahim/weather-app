@@ -24,7 +24,7 @@
             android:text="@string/Search"
             android:textStyle="bold"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/btnSearch"
+            android:layout_height="0dp" android:id="@+id/btnSearch"
             app:layout_constraintTop_toBottomOf="@+id/etLocation" app:layout_constraintStart_toStartOf="@id/vInput"
             app:layout_constraintEnd_toEndOf="@id/vInput" android:layout_marginTop="8dp"
             app:layout_constraintHorizontal_bias="0.498"/>
@@ -36,7 +36,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/tvCity"
-            android:textSize="32sp"
+            android:textSize="40sp"
             android:fontFamily="sans-serif"
             app:layout_constraintTop_toBottomOf="@+id/vInput" app:layout_constraintStart_toStartOf="@id/vLocation"
             app:layout_constraintEnd_toEndOf="@id/vLocation" app:layout_constraintBottom_toBottomOf="@+id/vLocation"
@@ -64,7 +64,7 @@
             android:layout_marginBottom="264dp" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"/>
     <TextView
-            android:textSize="32sp"
+            android:textSize="40sp"
             android:layout_width="wrap_content"
             android:fontFamily="sans-serif"
             android:layout_height="wrap_content" android:id="@+id/tvCurrentTemp"
@@ -72,7 +72,88 @@
             android:layout_marginTop="64dp" android:layout_marginStart="28dp"/>
     <ImageView
             android:layout_width="158dp"
-            android:layout_height="165dp" app:srcCompat="@drawable/cloudy" android:id="@+id/ivCurrent"
+            android:layout_height="165dp" android:id="@+id/ivCurrent"
             app:layout_constraintEnd_toEndOf="@+id/view" app:layout_constraintBottom_toBottomOf="@+id/view"
             android:layout_marginBottom="8dp" android:contentDescription="TODO"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tvCurrentFeelsLike"
+            app:layout_constraintTop_toBottomOf="@+id/tvCurrentTemp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp" android:layout_marginStart="16dp"/>
+    <View
+            android:layout_width="wrap_content"
+            android:layout_height="75dp" android:id="@+id/vCurrentDescription"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="188dp"/>
+    <TextView
+            android:textSize="32sp"
+            android:fontFamily="sans-serif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tvCurrentDescription"
+            app:layout_constraintTop_toBottomOf="@+id/view"
+            app:layout_constraintBottom_toBottomOf="@+id/vCurrentDescription"
+            app:layout_constraintStart_toStartOf="@id/vCurrentDescription"
+            app:layout_constraintVertical_bias="0.0" app:layout_constraintEnd_toEndOf="@id/vCurrentDescription"
+            app:layout_constraintHorizontal_bias="0.498"/>
+    <View
+            android:layout_width="wrap_content"
+            android:layout_height="80dp" android:id="@+id/vDaily"
+            app:layout_constraintTop_toBottomOf="@+id/vCurrentDescription"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.34" app:layout_constraintStart_toStartOf="parent"/>
+    <TextView
+            android:layout_width="40dp"
+            android:layout_height="23dp" android:id="@+id/tvDaily1Day"
+            android:textSize="20sp"
+            app:layout_constraintTop_toTopOf="@+id/vDaily" app:layout_constraintStart_toStartOf="@id/vDaily"
+            android:layout_marginTop="16dp" android:layout_marginStart="68dp"/>
+    <TextView
+            android:layout_width="40dp"
+            android:textSize="20sp"
+            android:layout_height="23dp" android:id="@+id/tvDaily2Day"
+            app:layout_constraintTop_toTopOf="@+id/vDaily"
+            android:layout_marginTop="16dp" android:layout_marginStart="20dp"
+            app:layout_constraintStart_toEndOf="@+id/ivDaily1"/>
+    <TextView
+            android:layout_width="40dp"
+            android:textSize="20sp"
+            android:layout_height="23dp" android:id="@+id/tvDaily3Day"
+            app:layout_constraintTop_toTopOf="@+id/vDaily"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toEndOf="@+id/ivDaily2" android:layout_marginStart="16dp"/>
+    <TextView
+            android:layout_width="40dp"
+            android:textSize="15sp"
+            android:layout_height="23dp" android:id="@+id/tvDaily3Temp"
+            app:layout_constraintStart_toEndOf="@+id/ivDaily2" android:layout_marginStart="16dp"
+            app:layout_constraintTop_toTopOf="@+id/tvDaily3Day" android:layout_marginTop="24dp"/>
+    <TextView
+            android:layout_width="40dp"
+            android:textSize="15sp"
+            android:layout_height="22dp" android:id="@+id/tvDaily1Temp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="68dp"
+            app:layout_constraintTop_toTopOf="@+id/tvDaily1Day" android:layout_marginTop="24dp"/>
+    <TextView
+            android:layout_width="40dp"
+            android:textSize="15sp"
+            android:layout_height="22dp" android:id="@+id/tvDaily2Temp"
+            app:layout_constraintStart_toEndOf="@+id/ivDaily1"
+            android:layout_marginStart="20dp"
+            app:layout_constraintTop_toTopOf="@+id/tvDaily2Day" android:layout_marginTop="24dp"/>
+    <ImageView
+            android:layout_width="45dp"
+            android:layout_height="39dp" tools:srcCompat="@tools:sample/avatars" android:id="@+id/ivDaily1"
+            app:layout_constraintStart_toEndOf="@+id/tvDaily1Day" app:layout_constraintBottom_toBottomOf="@+id/vDaily"
+            android:layout_marginStart="4dp" android:layout_marginBottom="24dp"/>
+    <ImageView
+            android:layout_width="45dp"
+            android:layout_height="39dp" tools:srcCompat="@tools:sample/avatars" android:id="@+id/ivDaily2"
+            app:layout_constraintStart_toEndOf="@+id/tvDaily2Day" app:layout_constraintBottom_toBottomOf="@+id/vDaily"
+            android:layout_marginStart="4dp" android:layout_marginBottom="24dp"/>
+    <ImageView
+            android:layout_width="45dp"
+            android:layout_height="39dp" tools:srcCompat="@tools:sample/avatars" android:id="@+id/ivDaily3"
+            app:layout_constraintBottom_toBottomOf="@+id/vDaily"
+            android:layout_marginBottom="24dp" android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@+id/tvDaily3Day"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
