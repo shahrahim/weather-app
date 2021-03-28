@@ -1,31 +1,52 @@
 package com.project.weatherapp
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import com.project.weatherapp.entity.DayEnum
 import com.project.weatherapp.entity.Weather
 import com.project.weatherapp.entity.WeatherEnum
 import com.project.weatherapp.entity.WeatherForecast
+import com.project.weatherapp.exception.WeatherNotFoundException
 import com.project.weatherapp.service.WeatherService
 import com.project.weatherapp.util.DateUtil
 import com.project.weatherapp.util.StringUtil
 import com.project.weatherapp.util.WeatherUtil
 import kotlinx.android.synthetic.main.input_view.*
 import java.lang.Exception
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationManager: LocationManager
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var locationCallback: LocationCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
+
 
         val btnSearchWeather = findViewById<Button>(R.id.btnSearch)
         val etLocation = findViewById<EditText>(R.id.etLocation)
@@ -50,25 +71,45 @@ class MainActivity : AppCompatActivity() {
         val ivDaily2: ImageView = findViewById<ImageView>(R.id.ivDaily2)
         val ivDaily3: ImageView = findViewById<ImageView>(R.id.ivDaily3)
 
-        vHome.setBackgroundResource(R.drawable.gradient_background_day)
+        vHome.setBackgroundResource(R.drawable.gradient_background_afternoon)
 
 
         etLocation.setBackgroundResource(R.color.white)
         btnSearchWeather.setTextColor(Color.WHITE)
         ivLocation.visibility = View.GONE
 
+
         btnSearchWeather.setBackgroundColor(Color.parseColor("#FF7900"))
         btnSearchWeather.setOnClickListener {
+            var weather: Weather? = null
             val locationInput: String = etLocation.text.toString()
-            val weather: Weather = WeatherService().getWeather(locationInput)
 
-            val backgroundResource: Int =
-                if(weather.isDayTime) {
-                R.drawable.gradient_background_day
-            } else {
-                R.drawable.gradient_background_night
+            try {
+                weather = WeatherService().getWeather(locationInput)
+            } catch (e: WeatherNotFoundException) {
+                vHome.setBackgroundResource(R.drawable.gradient_background_afternoon)
+                ivLocation.visibility = View.GONE
+                val myToast = Toast.makeText(applicationContext,"oops something went wrong",Toast.LENGTH_SHORT)
+                myToast.setGravity(Gravity.LEFT,200,200)
+                myToast.show()
+
+                return@setOnClickListener
             }
 
+            println(weather.dayPhase)
+
+            val backgroundResource =
+                if(weather.dayPhase == DayEnum.MORNING) {
+                    R.drawable.gradient_background_morning
+                } else if(weather.dayPhase == DayEnum.NOON) {
+                    R.drawable.gradient_background_noon
+                } else if(weather.dayPhase == DayEnum.AFTERNOON) {
+                    R.drawable.gradient_background_afternoon
+                } else if(weather.dayPhase == DayEnum.EVENING) {
+                    R.drawable.gradient_background_evening
+                } else {
+                    R.drawable.gradient_background_night
+                }
             vHome.setBackgroundResource(backgroundResource)
 
             val feelsLike = weather.current.feelsLike
@@ -82,7 +123,7 @@ class MainActivity : AppCompatActivity() {
             tvCoordinates.text = "$lon, $lat"
             tvCoordinates.setTextColor(Color.WHITE)
 
-            ivCurrent.setImageResource(WeatherUtil().getWeatherImageIdFromType(weather.current.description, weather.isDayTime))
+            ivCurrent.setImageResource(WeatherUtil().getWeatherImageIdFromType(weather.current.description, weather.dayPhase))
             ivCurrent.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
 
             val tempInFahrenheit: Int = WeatherUtil().getFarenheitFromKelvin(weather.current.temp)
@@ -96,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             tvCurrentFeelsLike.setTextColor(Color.WHITE)
             println(DateUtil().getWeekDayFromEpochTime(weather.current.dateTime, ""))
 
-            tvCurrentDescription.text = StringUtil().toUpperCase(weather.current.subDescription)
+            tvCurrentDescription.text = "${weather.dayPhase} " + StringUtil().toUpperCase(weather.current.subDescription)
             tvCurrentDescription.setTextColor(Color.WHITE)
             ivLocation.visibility = View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE
 
@@ -141,9 +182,9 @@ class MainActivity : AppCompatActivity() {
             tvDaily2Temp.text = "$daily2Temp "+ "\u2109";
             tvDaily3Temp.text = "$daily3Temp "+ "\u2109";
 
-            ivDaily1.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily1Forecast.description, true))
-            ivDaily2.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily2Forecast.description, true))
-            ivDaily3.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily3Forecast.description, true))
+            ivDaily1.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily1Forecast.description, DayEnum.NOON))
+            ivDaily2.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily2Forecast.description, DayEnum.NOON))
+            ivDaily3.setImageResource(WeatherUtil().getWeatherImageIdFromType(daily3Forecast.description, DayEnum.NOON))
 
             ivDaily1.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
             ivDaily2.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
@@ -159,7 +200,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getWeatherImage(weatherType: WeatherEnum): Int {
-        return R.drawable.cloudy
-    }
+//    fun clearViews() {
+//        vHome.setBackgroundResource(R.drawable.gradient_background_afternoon)
+//        etLocation.setBackgroundResource(R.color.white)
+//        btnSearchWeather.setTextColor(Color.WHITE)
+//        ivLocation.visibility = View.GONE
+//
+//    }
+
 }
