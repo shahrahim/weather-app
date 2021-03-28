@@ -12,10 +12,8 @@ class WeatherUtil {
 
     fun getFarenheitFromKelvin(kelvin: Double): Int {
         val tempInCelsius: Int = this.getCelciusFromKelvin(kelvin)
-        println("Temp in celcius is: $tempInCelsius")
-        val tempInFarenheit: Double = (tempInCelsius * (9/5)) + 32.0
-        println("Temp in farenheit: ${tempInFarenheit}")
-        return tempInFarenheit.toInt()
+        val tempInFarenheit: Double = (tempInCelsius) * 1.8
+        return (tempInFarenheit + 32).toInt()
     }
 
     fun getCelciusFromKelvin(kelvin: Double): Int {

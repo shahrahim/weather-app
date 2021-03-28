@@ -96,8 +96,6 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            println(weather.dayPhase)
-
             val backgroundResource =
                 if(weather.dayPhase == DayEnum.MORNING) {
                     R.drawable.gradient_background_morning
@@ -135,7 +133,6 @@ class MainActivity : AppCompatActivity() {
             val feelsLikeFormat: String = "Feels like $feelsLikeTemp "+ "\u2109";
             tvCurrentFeelsLike.text = feelsLikeFormat
             tvCurrentFeelsLike.setTextColor(Color.WHITE)
-            println(DateUtil().getWeekDayFromEpochTime(weather.current.dateTime, ""))
 
             tvCurrentDescription.text = "${weather.dayPhase} " + StringUtil().toUpperCase(weather.current.subDescription)
             tvCurrentDescription.setTextColor(Color.WHITE)
