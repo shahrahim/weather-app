@@ -5,6 +5,5 @@ data class Weather(
     var current: WeatherForecast,
     var daily: MutableList<WeatherForecast>,
     val timezone: String,
-    val isDayTime: Boolean
-
+    val dayPhase: DayEnum
 )

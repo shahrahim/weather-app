@@ -2,10 +2,7 @@ package com.project.weatherapp.service;
 
 import com.project.weatherapp.config.WeatherConfig
 import com.project.weatherapp.entity.*
-import com.project.weatherapp.util.DateUtil
-import com.project.weatherapp.util.HttpUtil;
-import com.project.weatherapp.util.JsonUtil
-import com.project.weatherapp.util.WeatherUtil
+import com.project.weatherapp.util.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -17,7 +14,7 @@ class WeatherService {
 
     private val weatherConfig = WeatherConfig()
 
-    private val zipCodePattern = Regex("^\\d{5}(?:[-\\s]\\d{4})?\$")
+    private val ZIP_CODE_PATTERN = Regex("^\\d{5}(?:[-\\s]\\d{4})?\$")
 
 
     fun getWeather(location: String): Weather {
@@ -26,15 +23,18 @@ class WeatherService {
         val weather: Weather
 
         val jsonResponse: JSONObject = httpUtil.getJsonObjectFromHttpRequest(weatherUrl)
+        val currentForecast: WeatherForecast
+        val dailyForecastList: MutableList<WeatherForecast>
+
         val currentWeather: JSONObject = jsonUtil.getJsonObjectByKey(jsonResponse,"current")
         val dailyWeather: JSONArray = jsonUtil.getJsonArrayByKey(jsonResponse,"daily")
         val timeZone: String = jsonUtil.getValueByKey(jsonResponse, "timezone") as String
 
-        val currentForecast: WeatherForecast = this.getCurrentForecast(currentWeather)
-        val dailyForecastList: MutableList<WeatherForecast> = this.getDailyForecast(dailyWeather)
-        val isDaytime: Boolean = DateUtil().isDaytime(currentForecast.dateTime, currentForecast.sunrise,
+        currentForecast = this.getCurrentForecast(currentWeather)
+        dailyForecastList = this.getDailyForecast(dailyWeather)
+        val dayPhase: DayEnum = DateUtil().getDayPhase(currentForecast.dateTime, currentForecast.sunrise,
             currentForecast.sunset)
-        return Weather(weatherLocation, currentForecast, dailyForecastList, timeZone, isDaytime)
+        return Weather(weatherLocation, currentForecast, dailyForecastList, timeZone, dayPhase)
     }
 
 
@@ -53,11 +53,12 @@ class WeatherService {
     }
 
     private fun getCurrentForecast(weatherObj: JSONObject): WeatherForecast {
-        val temp: Double = jsonUtil.getValueByKey(weatherObj,"temp") as Double
-        val feelsLike: Double = jsonUtil.getValueByKey(weatherObj,"feels_like") as Double
+        val temp = jsonUtil.getValueByKey(weatherObj,"temp")
+        val feelsLike = jsonUtil.getValueByKey(weatherObj,"feels_like")
         val forecast: WeatherForecast = this.getForecastInfo(weatherObj)
-        forecast.temp = temp
-        forecast.feelsLike = feelsLike
+        
+        forecast.temp = MathUtil().getDouble(temp)
+        forecast.feelsLike = MathUtil().getDouble(feelsLike)
         return forecast
     }
 
@@ -70,18 +71,17 @@ class WeatherService {
             val feelsLikeObj: JSONObject = jsonUtil.getJsonObjectByKey(weatherObj,"feels_like")
 
             val forecast: WeatherForecast = this.getForecastInfo(weatherObj)
-            val temperature: Double = jsonUtil.getValueByKey(temperatureObj,"day") as Double
-            val feelsLike: Double = jsonUtil.getValueByKey(feelsLikeObj,"day") as Double
-            forecast.temp = temperature
-            forecast.feelsLike = feelsLike
+            val temp = jsonUtil.getValueByKey(temperatureObj,"max")
+            val feelsLike = jsonUtil.getValueByKey(feelsLikeObj,"day")
+            forecast.temp = MathUtil().getDouble(temp)
+            forecast.feelsLike = MathUtil().getDouble(feelsLike)
             forecastList.add(i,forecast)
         }
         return forecastList
     }
 
     private fun getForecastInfo(weatherObj: JSONObject): WeatherForecast {
-        val weatherInfo: JSONObject = jsonUtil.getJsonArrayByKey(weatherObj, "weather")
-            .getJSONObject(0)
+        val weatherInfo: JSONObject = jsonUtil.getJsonArrayByKey(weatherObj, "weather").getJSONObject(0)
         val mainDescription: String = jsonUtil.getValueByKey(weatherInfo, "main") as String
         val subDescription: String = jsonUtil.getValueByKey(weatherInfo, "description") as String
         val currentTime: Int = jsonUtil.getValueByKey(weatherObj, "dt") as Int
@@ -114,7 +114,7 @@ class WeatherService {
     }
 
     private fun isZipcode(location: String): Boolean {
-        return zipCodePattern.matches(location)
+        return ZIP_CODE_PATTERN.matches(location)
     }
 
     private fun getWeatherUrl(weatherLocation: WeatherLocation): String {

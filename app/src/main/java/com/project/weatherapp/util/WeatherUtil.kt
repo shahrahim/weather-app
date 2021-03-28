@@ -1,6 +1,7 @@
 package com.project.weatherapp.util
 
 import com.project.weatherapp.R
+import com.project.weatherapp.entity.DayEnum
 import com.project.weatherapp.entity.Weather
 import com.project.weatherapp.entity.WeatherEnum
 import com.project.weatherapp.entity.WeatherForecast
@@ -11,7 +12,9 @@ class WeatherUtil {
 
     fun getFarenheitFromKelvin(kelvin: Double): Int {
         val tempInCelsius: Int = this.getCelciusFromKelvin(kelvin)
-        val tempInFarenheit: Int = (tempInCelsius * (9/5)) + 32
+        println("Temp in celcius is: $tempInCelsius")
+        val tempInFarenheit: Double = (tempInCelsius * (9/5)) + 32.0
+        println("Temp in farenheit: ${tempInFarenheit}")
         return tempInFarenheit.toInt()
     }
 
@@ -48,20 +51,20 @@ class WeatherUtil {
         return weatherType
     }
 
-    fun getWeatherImageIdFromType(weatherType: WeatherEnum, isDayTime: Boolean): Int {
+    fun getWeatherImageIdFromType(weatherType: WeatherEnum, dayPhase: DayEnum): Int {
         val imageId: Int
 
         var clearImageId: Int = 0
         var lightCloudImageId: Int = 0
 
         if(weatherType == WeatherEnum.CLEAR) {
-            clearImageId = if(isDayTime) {
+            clearImageId = if(dayPhase != DayEnum.NIGHT) {
                 R.drawable.clear
             } else {
                 R.drawable.clear_night
             }
         } else if (weatherType == WeatherEnum.LIGHTCOUD) {
-            lightCloudImageId = if(isDayTime) {
+            lightCloudImageId = if(dayPhase != DayEnum.NIGHT) {
                 R.drawable.light_cloud
             } else {
                 R.drawable.light_cloud_night
