@@ -21,8 +21,8 @@ class DateUtil {
         val dayLength: Long = this.getDayLength(sunriseTime, sunsetTime)
 
         val morningLimit = (.25 * dayLength).toLong() + sunriseTime
-        val noonLimit = (.55 * dayLength).toLong() + sunriseTime
-        val afterNoonLimit = (.75 * dayLength).toLong() + sunriseTime
+        val noonLimit = (.65 * dayLength).toLong() + sunriseTime
+        val afterNoonLimit = (.85 * dayLength).toLong() + sunriseTime
         val eveningLimit = (.99 * dayLength).toLong() + sunriseTime
 
         val isMorning = (currTime > sunriseTime + 1) && (currTime <= morningLimit)
