@@ -48,8 +48,11 @@ class WeatherService {
         val lat: Double = jsonUtil.getValueByKey(weatherCoordinateJson,"lat") as Double
         val city: String = jsonUtil.getValueByKey(jsonResponse,"name") as String
 
+        val countryObject: JSONObject = jsonUtil.getJsonObjectByKey(jsonResponse, "sys")
+        val country: String = jsonUtil.getValueByKey(countryObject, "country") as String
+
         val weatherCoordinate: WeatherCoordinate = WeatherCoordinate(lon, lat)
-        return WeatherLocation(weatherCoordinate, city)
+        return WeatherLocation(weatherCoordinate, city, country)
     }
 
     private fun getCurrentForecast(weatherObj: JSONObject): WeatherForecast {

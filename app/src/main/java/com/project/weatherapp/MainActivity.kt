@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
             vHome.setBackgroundResource(backgroundResource)
 
             val feelsLike = weather.current.feelsLike
-            tvCity.text = weather.location.city
+            tvCity.text = weather.location.city + ", " + weather.location.country
             tvCity.setTextColor(Color.WHITE)
             tvCity.setTypeface(null, Typeface.ITALIC)
 
@@ -196,13 +196,4 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
-//    fun clearViews() {
-//        vHome.setBackgroundResource(R.drawable.gradient_background_afternoon)
-//        etLocation.setBackgroundResource(R.color.white)
-//        btnSearchWeather.setTextColor(Color.WHITE)
-//        ivLocation.visibility = View.GONE
-//
-//    }
-
 }
