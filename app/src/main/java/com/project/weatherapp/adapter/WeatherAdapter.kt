@@ -39,33 +39,6 @@ class WeatherAdapter(_activity: Activity) {
     }
 
     fun updateView() {
-
-        if (ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location? ->
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    println(location.latitude)
-                } else {
-                    println("Brush and Stroke")
-                }
-            }
         val backgroundResource: Int = this.weatherView.getWeatherBackgroundResource(weather)
         weatherView.vHome.setBackgroundResource(backgroundResource)
 
@@ -102,6 +75,7 @@ class WeatherAdapter(_activity: Activity) {
             "${weather.dayPhase} " + StringUtil().toUpperCase(weather.current.subDescription)
         weatherView.tvCurrentDescription.setTextColor(Color.WHITE)
         weatherView.ivLocation.visibility = View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE
+        toggleImages(View.VISIBLE)
 
     }
 
@@ -136,8 +110,6 @@ class WeatherAdapter(_activity: Activity) {
         weatherView.etLocation.setText("")
         weatherView.tvCity.text = ""
         weatherView.tvLocation.text = ""
-        weatherView.ivLocation.visibility = View.GONE
-        weatherView.ivCurrent.visibility = View.GONE
         weatherView.tvCurrentTemp.text = ""
         weatherView.tvCurrentFeelsLike.text = ""
         weatherView.tvCurrentDescription.text = ""
@@ -148,10 +120,16 @@ class WeatherAdapter(_activity: Activity) {
         for (view in weatherView.dailyTempTvs) {
             view.text = ""
         }
-        for (view in weatherView.dailyIvs) {
-            view.visibility = View.GONE
-        }
+        toggleImages(View.GONE)
         this.clearKeyboard()
+    }
+
+    fun toggleImages(state: Int) {
+        weatherView.ivLocation.visibility = state
+        weatherView.ivCurrent.visibility = state
+        for (view in weatherView.dailyIvs) {
+            view.visibility = state
+        }
     }
 
     fun clearKeyboard() {
