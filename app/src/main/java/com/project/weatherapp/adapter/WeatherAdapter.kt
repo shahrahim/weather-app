@@ -1,13 +1,18 @@
 package com.project.weatherapp.adapter
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
+import android.location.Location
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.LocationServices
 import com.project.weatherapp.R
 import com.project.weatherapp.entity.DayEnum
 import com.project.weatherapp.entity.Weather
@@ -25,6 +30,8 @@ class WeatherAdapter(_activity: Activity) {
 
     private lateinit var weather: Weather
 
+    var fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
+
     private var weatherView = WeatherView(_activity)
 
     fun setWeather(weather: Weather) {
@@ -32,6 +39,33 @@ class WeatherAdapter(_activity: Activity) {
     }
 
     fun updateView() {
+
+        if (ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+                if (location != null) {
+                    println(location.latitude)
+                } else {
+                    println("Brush and Stroke")
+                }
+            }
         val backgroundResource: Int = this.weatherView.getWeatherBackgroundResource(weather)
         weatherView.vHome.setBackgroundResource(backgroundResource)
 
@@ -73,7 +107,6 @@ class WeatherAdapter(_activity: Activity) {
 
     fun setDailyViews() {
         for (index in 0..2) {
-            println(weatherView.dailyDayTvs.size)
             val dailyDayTv = weatherView.dailyDayTvs[index]
             val dailyTempTv = weatherView.dailyTempTvs[index]
             val dailyIv: ImageView = weatherView.dailyIvs[index]
@@ -122,8 +155,8 @@ class WeatherAdapter(_activity: Activity) {
     }
 
     fun clearKeyboard() {
-        val imm: InputMethodManager? = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+        val inputMethodManager = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(activity.currentFocus!!.windowToken, 0)
     }
 
 }

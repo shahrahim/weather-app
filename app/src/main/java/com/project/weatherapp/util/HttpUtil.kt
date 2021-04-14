@@ -21,7 +21,7 @@ class HttpUtil {
             jsonUtil.getNewJsonObject(jsonResponseStr)
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "Could not get json response for $url")
-            throw WeatherNotFoundException("Somethinf went wrong")
+            throw WeatherNotFoundException("Something went wrong")
         }
     }
 }

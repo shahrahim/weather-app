@@ -1,35 +1,20 @@
 package com.project.weatherapp
 
-import android.content.Context
 import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.Typeface
-import android.location.LocationManager
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.*
 import com.project.weatherapp.adapter.WeatherAdapter
-import com.project.weatherapp.entity.DayEnum
 import com.project.weatherapp.entity.Weather
-import com.project.weatherapp.entity.WeatherForecast
 import com.project.weatherapp.exception.WeatherNotFoundException
 import com.project.weatherapp.service.WeatherService
-import com.project.weatherapp.util.DateUtil
-import com.project.weatherapp.util.WeatherUtil
 import kotlinx.android.synthetic.main.input_view.*
+import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
-
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationManager: LocationManager
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
+class MainActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,5 +47,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
 }

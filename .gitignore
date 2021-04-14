@@ -11,6 +11,8 @@
 # Java class files
 *.class
 
+*.png
+
 # Generated files
 bin/
 gen/

@@ -1,7 +1,7 @@
 package com.project.weatherapp.entity
 
 data class Weather(
-    var location: WeatherLocation,
+    var location: Location,
     var current: WeatherForecast,
     var daily: MutableList<WeatherForecast>,
     val timezone: String,
