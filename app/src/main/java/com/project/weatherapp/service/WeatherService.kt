@@ -17,9 +17,17 @@ class WeatherService {
     private val ZIP_CODE_PATTERN = Regex("^\\d{5}(?:[-\\s]\\d{4})?\$")
 
 
-    fun getWeather(location: String): Weather {
-        val weatherLocation: WeatherLocation = this.getWeatherLocation(location)
-        val weatherUrl: String = this.getWeatherUrl(weatherLocation)
+    fun getWeather(locationInput: String): Weather {
+        var finalLocation: String = ""
+
+        finalLocation = if(locationInput == "") {
+            LocationService().getDefaultLocation()
+        } else {
+            locationInput
+        }
+
+        val location: Location = this.getWeatherLocation(finalLocation)
+        val weatherUrl: String = this.getWeatherUrl(location)
         val weather: Weather
 
         val jsonResponse: JSONObject = httpUtil.getJsonObjectFromHttpRequest(weatherUrl)
@@ -34,11 +42,11 @@ class WeatherService {
         dailyForecastList = this.getDailyForecast(dailyWeather)
         val dayPhase: DayEnum = DateUtil().getDayPhase(currentForecast.dateTime, currentForecast.sunrise,
             currentForecast.sunset)
-        return Weather(weatherLocation, currentForecast, dailyForecastList, timeZone, dayPhase)
+        return Weather(location, currentForecast, dailyForecastList, timeZone, dayPhase)
     }
 
 
-    private fun getWeatherLocation(location: String): WeatherLocation {
+    private fun getWeatherLocation(location: String): Location {
         val locationUrl: String = this.getLocationUrl(location)
 
         val jsonResponse: JSONObject = httpUtil.getJsonObjectFromHttpRequest(locationUrl)
@@ -51,8 +59,8 @@ class WeatherService {
         val countryObject: JSONObject = jsonUtil.getJsonObjectByKey(jsonResponse, "sys")
         val country: String = jsonUtil.getValueByKey(countryObject, "country") as String
 
-        val weatherCoordinate: WeatherCoordinate = WeatherCoordinate(lon, lat)
-        return WeatherLocation(weatherCoordinate, city, country)
+        val coordinate: Coordinate = Coordinate(lon, lat)
+        return Location(coordinate, city, country)
     }
 
     private fun getCurrentForecast(weatherObj: JSONObject): WeatherForecast {
@@ -120,13 +128,13 @@ class WeatherService {
         return ZIP_CODE_PATTERN.matches(location)
     }
 
-    private fun getWeatherUrl(weatherLocation: WeatherLocation): String {
+    private fun getWeatherUrl(location: Location): String {
         val url: String = weatherConfig.openWeatherApiUrl
         val uri: String = weatherConfig.weatherLookupUri
         val excludeParams: String = weatherConfig.weatherLookupExcludeParams
         val appId: String = weatherConfig.appId
-        val lon: Double = weatherLocation.coordinate.lon
-        val lat: Double = weatherLocation.coordinate.lat
+        val lon: Double = location.coordinate.lon
+        val lat: Double = location.coordinate.lat
         return "$url/$uri?lon=$lon&lat=$lat&exclude=$excludeParams&appid=$appId"
     }
 }

@@ -20,7 +20,7 @@ class DateUtil {
         val sunsetTime: Long = (sunsetEpochTime * 1000)
         val dayLength: Long = this.getDayLength(sunriseTime, sunsetTime)
 
-        val morningLimit = (.25 * dayLength).toLong() + sunriseTime
+        val morningLimit = (.45 * dayLength).toLong() + sunriseTime
         val noonLimit = (.65 * dayLength).toLong() + sunriseTime
         val afterNoonLimit = (.85 * dayLength).toLong() + sunriseTime
         val eveningLimit = (.99 * dayLength).toLong() + sunriseTime
