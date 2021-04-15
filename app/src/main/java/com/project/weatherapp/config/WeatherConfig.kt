@@ -5,6 +5,6 @@ data class WeatherConfig (
     var locationUri: String = "weather",
     val weatherLookupUri: String = "onecall",
     val locationExcludeParams: String = "minutely,hourly,daily,alerts",
-    val weatherLookupExcludeParams: String = "minutely,hourly,alerts",
+    val weatherLookupExcludeParams: String = "minutely,alerts",
     val appId: String = "ddc6ceaed94a3585de774b295163af4e"
 )

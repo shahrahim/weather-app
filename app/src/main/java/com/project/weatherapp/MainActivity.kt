@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(){
                 adapter.setWeather(weather)
                 adapter.updateView()
                 adapter.setDailyViews()
+                adapter.setHourlyViews()
                 adapter.clearKeyboard()
             } catch (e: WeatherNotFoundException) {
                 adapter.clearViews()

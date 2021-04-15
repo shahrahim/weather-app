@@ -21,6 +21,10 @@ class WeatherView(_activity: Activity) {
 
     val vHome: View = activity.findViewById<View>(R.id.vHome)
 
+    val vHourly: View = activity.findViewById<View>(R.id.vDaily)
+
+    val vDaily: View = activity.findViewById<View>(R.id.vDaily2)
+
     val ivLocation: ImageView = activity.findViewById<ImageView>(R.id.ivLocation)
 
     val ivCurrent: ImageView = activity.findViewById<ImageView>(R.id.ivCurrent)
@@ -43,6 +47,25 @@ class WeatherView(_activity: Activity) {
         activity.findViewById<ImageView>(R.id.ivDaily1),
         activity.findViewById<ImageView>(R.id.ivDaily2), activity.findViewById<ImageView>(R.id.ivDaily3)
     )
+
+    val hourTvs = listOf(
+        activity.findViewById<TextView>(R.id.tvHour1),
+        activity.findViewById<TextView>(R.id.tvHour2), activity.findViewById<TextView>(R.id.tvHour3),
+        activity.findViewById<TextView>(R.id.tvHour4)
+    )
+
+    val hourTempTvs = listOf(
+        activity.findViewById<TextView>(R.id.tvHour1Temp),
+        activity.findViewById<TextView>(R.id.tvHour2Temp), activity.findViewById<TextView>(R.id.tvHour3Temp),
+        activity.findViewById<TextView>(R.id.tvHour4Temp)
+    )
+
+    val hourIvs = listOf(
+        activity.findViewById<ImageView>(R.id.ivHour1),
+        activity.findViewById<ImageView>(R.id.ivHour2), activity.findViewById<ImageView>(R.id.ivHour3),
+        activity.findViewById<ImageView>(R.id.ivHour4)
+    )
+
 
     fun getWeatherBackgroundResource(weather: Weather): Int {
         return if (weather.dayPhase == DayEnum.MORNING) {

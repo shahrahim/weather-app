@@ -14,6 +14,13 @@ class DateUtil {
         return sdf.format(date)
     }
 
+    fun getTimeFromEpochTime(epochTime: Long, timezone: String): String {
+        val date = Date(epochTime * 1000L)
+        val dateFormat = SimpleDateFormat("HH")
+        dateFormat.timeZone = TimeZone.getTimeZone(timezone)
+        return getEstHour(dateFormat.format(date))
+    }
+
     fun getDayPhase(currentEpochTime: Long, sunriseEpochTime: Long, sunsetEpochTime: Long): DayEnum {
         val currTime: Long = (currentEpochTime * 1000)
         val sunriseTime: Long = (sunriseEpochTime * 1000)
@@ -45,5 +52,20 @@ class DateUtil {
 
     private fun getDayLength(sunrise: Long, sunset: Long): Long {
         return (sunset - sunrise)
+    }
+
+    private fun getEstHour(time: String): String {
+        var estPhase: String
+        var hour: Int = time.toInt()
+        if(hour > 12) {
+            estPhase = "PM"
+            hour -= 12
+        } else {
+            estPhase = "AM"
+            if(hour == 0) {
+                hour +=12
+            }
+        }
+        return "$hour $estPhase"
     }
 }
