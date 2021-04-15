@@ -30,8 +30,6 @@ class WeatherAdapter(_activity: Activity) {
 
     private lateinit var weather: Weather
 
-    var fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
-
     private var weatherView = WeatherView(_activity)
 
     fun setWeather(weather: Weather) {
@@ -87,7 +85,6 @@ class WeatherAdapter(_activity: Activity) {
 
             val dailyForecast: WeatherForecast = weather.daily[index+1]
             val dailyTemp: Int = WeatherUtil().getFarenheitFromKelvin(dailyForecast.temp)
-
             dailyDayTv.setTextColor(Color.WHITE)
             dailyDayTv.setTypeface(null, Typeface.BOLD)
             dailyTempTv.setTextColor(Color.WHITE)
@@ -96,6 +93,26 @@ class WeatherAdapter(_activity: Activity) {
             dailyTempTv.text = "$dailyTemp " + "\u2109";
             dailyIv.setImageResource(WeatherUtil().getWeatherImageIdFromType(dailyForecast.description, DayEnum.NOON))
             dailyIv.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+        }
+    }
+
+    fun setHourlyViews() {
+        for (index in 0..3) {
+            val hourTv = weatherView.hourTvs[index]
+            val hourTvTemp = weatherView.hourTempTvs[index]
+            val hourIv: ImageView = weatherView.hourIvs[index]
+            val hourlyForecast: WeatherForecast = weather.hourly[index+1]
+            val hourlyTemp: Int = WeatherUtil().getFarenheitFromKelvin(hourlyForecast.temp)
+
+            hourTv.setTextColor(Color.WHITE)
+            hourTv.setTypeface(null, Typeface.BOLD)
+            hourTvTemp.setTextColor(Color.WHITE)
+            hourTvTemp.setTypeface(null, Typeface.BOLD)
+            hourTv.text = DateUtil().getTimeFromEpochTime(hourlyForecast.dateTime, weather.timezone)
+            hourTvTemp.text = "$hourlyTemp " + "\u2109";
+            println("Hourly time is ${hourlyForecast.dateTime}")
+            hourIv.setImageResource(WeatherUtil().getWeatherImageIdFromType(hourlyForecast.description, weather.dayPhase))
+            hourIv.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
         }
     }
 
@@ -120,15 +137,25 @@ class WeatherAdapter(_activity: Activity) {
         for (view in weatherView.dailyTempTvs) {
             view.text = ""
         }
+        for (view in weatherView.hourTvs) {
+            view.text = ""
+        }
+        for (view in weatherView.hourTempTvs) {
+            view.text = ""
+        }
+
         toggleImages(View.GONE)
         this.clearKeyboard()
     }
 
-    fun toggleImages(state: Int) {
-        weatherView.ivLocation.visibility = state
-        weatherView.ivCurrent.visibility = state
+    fun toggleImages(visibility: Int) {
+        weatherView.ivLocation.visibility = visibility
+        weatherView.ivCurrent.visibility = visibility
         for (view in weatherView.dailyIvs) {
-            view.visibility = state
+            view.visibility = visibility
+        }
+        for (view in weatherView.hourIvs) {
+            view.visibility = visibility
         }
     }
 

@@ -32,17 +32,20 @@ class WeatherService {
 
         val jsonResponse: JSONObject = httpUtil.getJsonObjectFromHttpRequest(weatherUrl)
         val currentForecast: WeatherForecast
+        val hourlyForecastList: MutableList<WeatherForecast>
         val dailyForecastList: MutableList<WeatherForecast>
 
         val currentWeather: JSONObject = jsonUtil.getJsonObjectByKey(jsonResponse,"current")
+        val hourlyWeather: JSONArray = jsonUtil.getJsonArrayByKey(jsonResponse,"hourly")
         val dailyWeather: JSONArray = jsonUtil.getJsonArrayByKey(jsonResponse,"daily")
         val timeZone: String = jsonUtil.getValueByKey(jsonResponse, "timezone") as String
 
         currentForecast = this.getCurrentForecast(currentWeather)
+        hourlyForecastList = this.getHourlyForecast(hourlyWeather)
         dailyForecastList = this.getDailyForecast(dailyWeather)
         val dayPhase: DayEnum = DateUtil().getDayPhase(currentForecast.dateTime, currentForecast.sunrise,
             currentForecast.sunset)
-        return Weather(location, currentForecast, dailyForecastList, timeZone, dayPhase)
+        return Weather(location, currentForecast, hourlyForecastList, dailyForecastList, timeZone, dayPhase)
     }
 
 
@@ -70,7 +73,24 @@ class WeatherService {
         
         forecast.temp = MathUtil().getDouble(temp)
         forecast.feelsLike = MathUtil().getDouble(feelsLike)
+        setSunriseSunsetTime(weatherObj,forecast)
         return forecast
+    }
+
+    private fun getHourlyForecast(weatherObjArray: JSONArray): MutableList<WeatherForecast> {
+        val forecastList: MutableList<WeatherForecast> = mutableListOf<WeatherForecast>()
+
+        for(i in 0 until weatherObjArray.length()) {
+            val weatherObj: JSONObject = weatherObjArray.getJSONObject(i)
+            val temp = jsonUtil.getValueByKey(weatherObj,"temp")
+            val feelsLike = jsonUtil.getValueByKey(weatherObj,"feels_like")
+            val forecast: WeatherForecast = this.getForecastInfo(weatherObj)
+
+            forecast.temp = MathUtil().getDouble(temp)
+            forecast.feelsLike = MathUtil().getDouble(feelsLike)
+            forecastList.add(i,forecast)
+        }
+        return forecastList
     }
 
     private fun getDailyForecast(weatherObjArray: JSONArray): MutableList<WeatherForecast> {
@@ -86,6 +106,7 @@ class WeatherService {
             val feelsLike = jsonUtil.getValueByKey(feelsLikeObj,"day")
             forecast.temp = MathUtil().getDouble(temp)
             forecast.feelsLike = MathUtil().getDouble(feelsLike)
+            setSunriseSunsetTime(weatherObj,forecast)
             forecastList.add(i,forecast)
         }
         return forecastList
@@ -96,15 +117,22 @@ class WeatherService {
         val mainDescription: String = jsonUtil.getValueByKey(weatherInfo, "main") as String
         val subDescription: String = jsonUtil.getValueByKey(weatherInfo, "description") as String
         val currentTime: Int = jsonUtil.getValueByKey(weatherObj, "dt") as Int
-        val sunriseTime: Int = jsonUtil.getValueByKey(weatherObj, "sunrise") as Int
-        val sunsetTime: Int = jsonUtil.getValueByKey(weatherObj, "sunset") as Int
         val clouds: Int = jsonUtil.getValueByKey(weatherObj, "clouds") as Int
         val weatherType: WeatherEnum = WeatherUtil().getWeatherTypeFromString(mainDescription, clouds)
 
         return WeatherForecast(
             0.0, 0.0, mainDescription,
-            subDescription, currentTime.toLong(), sunriseTime.toLong(), sunsetTime.toLong(), clouds, weatherType
+            subDescription, currentTime.toLong(),0, 0, clouds, weatherType
         )
+    }
+
+    private fun setSunriseSunsetTime(weatherObj: JSONObject, forecast: WeatherForecast) {
+        val currentTime: Int = jsonUtil.getValueByKey(weatherObj, "dt") as Int
+        val sunriseTime: Int = jsonUtil.getValueByKey(weatherObj, "sunrise") as Int
+        val sunsetTime: Int = jsonUtil.getValueByKey(weatherObj, "sunset") as Int
+        forecast.dateTime = currentTime.toLong()
+        forecast.sunrise = sunriseTime.toLong()
+        forecast.sunset = sunsetTime.toLong()
     }
 
     private fun getLocationUrl(location: String): String {
