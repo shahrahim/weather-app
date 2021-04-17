@@ -70,9 +70,7 @@ class WeatherView(_activity: Activity) {
     fun getWeatherBackgroundResource(weather: Weather): Int {
         return if (weather.dayPhase == DayEnum.MORNING) {
             R.drawable.gradient_background_morning
-        } else if (weather.dayPhase == DayEnum.NOON) {
-            R.drawable.gradient_background_noon
-        } else if (weather.dayPhase == DayEnum.AFTERNOON) {
+        } else if (weather.dayPhase == DayEnum.NOON || weather.dayPhase == DayEnum.AFTERNOON) {
             R.drawable.gradient_background_afternoon
         } else if (weather.dayPhase == DayEnum.EVENING) {
             R.drawable.gradient_background_evening
