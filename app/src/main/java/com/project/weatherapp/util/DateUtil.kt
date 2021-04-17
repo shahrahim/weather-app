@@ -18,7 +18,7 @@ class DateUtil {
         val date = Date(epochTime * 1000L)
         val dateFormat = SimpleDateFormat("HH")
         dateFormat.timeZone = TimeZone.getTimeZone(timezone)
-        return getEstHour(dateFormat.format(date))
+        return getHour(dateFormat.format(date))
     }
 
     fun getDayPhase(currentEpochTime: Long, sunriseEpochTime: Long, sunsetEpochTime: Long): DayEnum {
@@ -54,18 +54,18 @@ class DateUtil {
         return (sunset - sunrise)
     }
 
-    private fun getEstHour(time: String): String {
-        var estPhase: String
+    private fun getHour(time: String): String {
+        var phase: String
         var hour: Int = time.toInt()
         if(hour > 12) {
-            estPhase = "PM"
+            phase = "PM"
             hour -= 12
         } else {
-            estPhase = "AM"
+            phase = "AM"
             if(hour == 0) {
                 hour +=12
             }
         }
-        return "$hour $estPhase"
+        return "$hour $phase"
     }
 }

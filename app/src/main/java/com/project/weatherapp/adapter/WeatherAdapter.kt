@@ -111,7 +111,9 @@ class WeatherAdapter(_activity: Activity) {
             hourTv.text = DateUtil().getTimeFromEpochTime(hourlyForecast.dateTime, weather.timezone)
             hourTvTemp.text = "$hourlyTemp " + "\u2109";
             println("Hourly time is ${hourlyForecast.dateTime}")
-            hourIv.setImageResource(WeatherUtil().getWeatherImageIdFromType(hourlyForecast.description, weather.dayPhase))
+            val hourlyDayPhase: DayEnum = DateUtil().getDayPhase(hourlyForecast.dateTime, weather.current.sunrise
+                , weather.current.sunset)
+            hourIv.setImageResource(WeatherUtil().getWeatherImageIdFromType(hourlyForecast.description, hourlyDayPhase))
             hourIv.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
         }
     }
